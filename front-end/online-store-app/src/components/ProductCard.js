@@ -1,0 +1,105 @@
+import * as React from "react";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import Box from "@mui/material/Box";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import IconButton from "@mui/material/IconButton";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import axios from "axios";
+import { useState, useEffect} from "react";
+
+function ProductCard(props) {
+  const [isFavorite, setIsFavorite] = useState(props.data.isFavorite)
+
+  useEffect(() => {
+    setIsFavorite(props.data.isFavorite);
+  }, [props.data.isFavorite]);
+
+  const handleFavorites = (props) => {
+    console.log(props);
+    if (!isFavorite) {
+      axios
+        .post(
+          `http://localhost:8081/api/favorite/addToFavorites/${props.data.id}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axios
+        .delete(
+          `http://localhost:8081/api/favorite/deleteProductFromFavorites/${props.data.id}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    setIsFavorite(!isFavorite);
+  };
+  return (
+    <div>
+      <Box sx={{ "& > :not(style)": { m: 1 } }}>
+        <IconButton
+          color="primary"
+          aria-label="add"
+          sx={{ left: "200px", bottom: "-48px", position: "relative" }}
+          onClick={() => handleFavorites(props)}
+        >
+          {!isFavorite && <FavoriteBorderOutlinedIcon />}
+          {isFavorite && <FavoriteIcon />}
+        </IconButton>
+      </Box>
+      <Card sx={{ maxWidth: 345 }}>
+        <img
+          src={props.data.image}
+          alt="Product"
+          width="250px"
+          height="225px"
+        />
+        <CardContent>
+          <Typography
+            variant="subtitle1"
+            gutterBottom
+            sx={{ textAlign: "center" }}
+          >
+            {props.data.name}
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            gutterBottom
+            sx={{ textAlign: "center", fontWeight: "600" }}
+          >
+            {props.data.price} lei
+          </Typography>
+        </CardContent>
+      </Card>
+      <Box sx={{ "& > :not(style)": { m: 1 } }}>
+        <Fab
+          color="primary"
+          aria-label="add"
+          size="small"
+          sx={{ bottom: "30px", position: "relative", left: "90px" }}
+        >
+          <AddIcon />
+        </Fab>
+      </Box>
+    </div>
+  );
+}
+
+export default ProductCard;

@@ -5,9 +5,20 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const cors = require("cors");
 const router = require("./routes");
+const cookieParser = require("cookie-parser");
 
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+  })
+);
+
+app.use(cookieParser());
 
 app.use(helmet());
 
