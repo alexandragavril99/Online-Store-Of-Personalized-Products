@@ -6,14 +6,10 @@ import ProductCardFavorite from "../components/ProductCardFavorite";
 const cardStyles = {
   productContainer: {
     display: "flex",
-    flexWrap: "wrap",
     justifyContent: "space-evenly",
   },
 
-  container: {
-    display: "flex",
-    flexDirection: "row",
-  },
+  container: {},
 };
 
 function Favorite() {

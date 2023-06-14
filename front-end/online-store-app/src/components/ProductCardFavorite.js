@@ -48,8 +48,8 @@ function ProductCard(props) {
           sx={{ left: "200px", bottom: "-48px", position: "relative" }}
           onClick={() => handleFavorites(props)}
         >
-          {!isFavorite && <FavoriteBorderOutlinedIcon />}
-          {isFavorite && <FavoriteIcon />}
+          {!isFavorite && <FavoriteBorderOutlinedIcon  style={{ color: "#d98bad" }} />}
+          {isFavorite && <FavoriteIcon  style={{ color: "#d98bad" }} />}
         </IconButton>
       </Box>
       <Card sx={{ maxWidth: 345 }}>
@@ -82,6 +82,7 @@ function ProductCard(props) {
           aria-label="add"
           size="small"
           sx={{ bottom: "30px", position: "relative", left: "90px" }}
+          style={{ backgroundColor: "#9a044c" }}
         >
           <AddIcon />
         </Fab>

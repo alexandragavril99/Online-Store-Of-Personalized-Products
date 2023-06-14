@@ -13,7 +13,9 @@ router.post("/upload", upload.single("image"), async (req, res) => {
     name: req.body.name,
     image: "data:image/jpg;base64," + base64Image,
     price: req.body.price,
-    quantity: req.body.quantity
+    quantity: req.body.quantity,
+    description: req.body.description,
+    label: req.body.label,
   };
 
   ProductSchema.create(product)

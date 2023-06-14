@@ -9,17 +9,19 @@ import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlin
 import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import axios from "axios";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Chip from "@mui/material/Chip";
 
 function ProductCard(props) {
-  const [isFavorite, setIsFavorite] = useState(props.data.isFavorite)
+  const navigate = useNavigate();
+  const [isFavorite, setIsFavorite] = useState(props.data.isFavorite);
 
   useEffect(() => {
     setIsFavorite(props.data.isFavorite);
   }, [props.data.isFavorite]);
 
   const handleFavorites = (props) => {
-    console.log(props);
     if (!isFavorite) {
       axios
         .post(
@@ -51,20 +53,75 @@ function ProductCard(props) {
     }
     setIsFavorite(!isFavorite);
   };
+
+  const handleAddToCart = (props) => {
+    axios
+      .post(
+        `http://localhost:8081/api/cart/addProductToCart/${props.data.id}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   return (
-    <div>
+    <div
+      style={{
+        margin: "0 10px 0 10px",
+        fontFamily: "'Montserrat', sans-serif",
+      }}
+    >
       <Box sx={{ "& > :not(style)": { m: 1 } }}>
-        <IconButton
-          color="primary"
-          aria-label="add"
-          sx={{ left: "200px", bottom: "-48px", position: "relative" }}
-          onClick={() => handleFavorites(props)}
-        >
-          {!isFavorite && <FavoriteBorderOutlinedIcon />}
-          {isFavorite && <FavoriteIcon />}
-        </IconButton>
+        {props.data.label.includes("discount") && (
+          <Chip
+            label="10%"
+            style={{
+              color: "#9a044c",
+              fontWeight: "600",
+              borderColor: "#9a044c",
+              border: "2px solid",
+            }}
+            variant="outlined"
+            sx={{ bottom: "-48px", position: "relative" }}
+          />
+        )}
+        {props.data.label.includes("discount") && (
+          <IconButton
+            color="primary"
+            aria-label="add"
+            sx={{ left: "135px", bottom: "-48px", position: "relative" }}
+            onClick={() => handleFavorites(props)}
+          >
+            {!isFavorite && (
+              <FavoriteBorderOutlinedIcon style={{ color: "#d98bad" }} />
+            )}
+            {isFavorite && <FavoriteIcon style={{ color: "#d98bad" }} />}
+          </IconButton>
+        )}
+        {!props.data.label.includes("discount") && (
+          <IconButton
+            color="primary"
+            aria-label="add"
+            sx={{ left: "200px", bottom: "-48px", position: "relative" }}
+            onClick={() => handleFavorites(props)}
+          >
+            {!isFavorite && (
+              <FavoriteBorderOutlinedIcon style={{ color: "#d98bad" }} />
+            )}
+            {isFavorite && <FavoriteIcon style={{ color: "#d98bad" }} />}
+          </IconButton>
+        )}
       </Box>
-      <Card sx={{ maxWidth: 345 }}>
+
+      <Card
+        sx={{ maxWidth: 345 }}
+        onClick={() => navigate("/details", { state: { product: props.data } })}
+      >
         <img
           src={props.data.image}
           alt="Product"
@@ -76,16 +133,50 @@ function ProductCard(props) {
             variant="subtitle1"
             gutterBottom
             sx={{ textAlign: "center" }}
+            style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             {props.data.name}
           </Typography>
-          <Typography
-            variant="subtitle1"
-            gutterBottom
-            sx={{ textAlign: "center", fontWeight: "600" }}
-          >
-            {props.data.price} lei
-          </Typography>
+          {!props.data.label.includes("discount") && (
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              sx={{ textAlign: "center", fontWeight: "600" }}
+              style={{ fontFamily: "'Montserrat', sans-serif" }}
+            >
+              {props.data.price} lei
+            </Typography>
+          )}
+          {props.data.label.includes("discount") && (
+            <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={{
+                  textAlign: "center",
+                  fontWeight: "600",
+                  textDecoration: "line-through",
+                }}
+                style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  color: "gray",
+                }}
+              >
+                {props.data.price} lei
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={{
+                  textAlign: "center",
+                  fontWeight: "600",
+                }}
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
+              >
+                {props.data.price - 0.1 * props.data.price} lei
+              </Typography>
+            </div>
+          )}
         </CardContent>
       </Card>
       <Box sx={{ "& > :not(style)": { m: 1 } }}>
@@ -93,7 +184,11 @@ function ProductCard(props) {
           color="primary"
           aria-label="add"
           size="small"
+          style={{ backgroundColor: "#9a044c" }}
           sx={{ bottom: "30px", position: "relative", left: "90px" }}
+          onClick={() => {
+            handleAddToCart(props);
+          }}
         >
           <AddIcon />
         </Fab>

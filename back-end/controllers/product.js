@@ -26,6 +26,7 @@ const controller = {
                 image: product.image.toString("base64"),
                 quantity: product.quantity,
                 isFavorite: favorite ? true : false,
+                label: product.label,
               };
               productList.push(fullProduct);
             });
