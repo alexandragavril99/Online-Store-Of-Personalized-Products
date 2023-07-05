@@ -23,10 +23,15 @@ const controller = {
                 id: product.id,
                 name: product.name,
                 price: product.price,
+                description: product.description,
                 image: product.image.toString("base64"),
                 quantity: product.quantity,
                 isFavorite: favorite ? true : false,
                 label: product.label,
+                personalization:
+                  favorite && favorite.personalization
+                    ? favorite.personalization
+                    : null,
               };
               productList.push(fullProduct);
             });
@@ -43,6 +48,26 @@ const controller = {
     }
     res.status(403).send({ message: "Token is missing." });
     return;
+  },
+
+  addProduct: async (req, res) => {
+    const product = {
+      name: req.body.name,
+      image: `${req.file.filename}`,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      description: req.body.description,
+      label: req.body.label,
+    };
+
+    ProductSchema.create(product)
+      .then((response) => {
+        res.status(201).send({ message: "Product added.", item: response });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(500).send({ message: error.message });
+      });
   },
 };
 

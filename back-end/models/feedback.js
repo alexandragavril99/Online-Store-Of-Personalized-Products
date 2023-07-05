@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const cartSchema = mongoose.Schema({
+const feedbackSchema = mongoose.Schema({
   userId: {
     type: String,
     required: true,
@@ -9,12 +9,15 @@ const cartSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  quantity: {
+  feedback: {
+    type: String,
+  },
+  rating: {
     type: Number,
   },
-  personalization: {
-    type: Array,
+  date: {
+    type: Date,
   },
 });
 
-module.exports = mongoose.model("Cart", cartSchema);
+module.exports = mongoose.model("Feedback", feedbackSchema);

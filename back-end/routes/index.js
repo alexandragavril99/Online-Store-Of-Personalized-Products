@@ -7,6 +7,7 @@ const favoriteRouter = require("./favorite");
 const cartRouter = require("./cart");
 const stripeRouter = require("./stripe");
 const orderRouter = require("./order");
+const feedbackRouter = require("./feedback");
 
 router.use("/user", userRouter);
 router.use("/", authRouter);
@@ -15,5 +16,6 @@ router.use("/favorite", favoriteRouter);
 router.use("/cart", cartRouter);
 router.use("/stripe", stripeRouter);
 router.use("/order", orderRouter);
+router.use("/feedback", feedbackRouter);
 
 module.exports = router;

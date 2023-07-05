@@ -2,15 +2,23 @@ import React, { useState, useEffect } from "react";
 import NavbarMenu from "../components/NavbarMenu";
 import axios from "axios";
 import ProductCardFavorite from "../components/ProductCardFavorite";
+import { Typography } from "@mui/material";
 
 const cardStyles = {
   productContainer: {
     display: "flex",
     justifyContent: "space-evenly",
+    fontFamily: "'Montserrat', sans-serif"
   },
-
-  container: {},
+  header: {
+    paddingTop: "30px",
+    paddingBottom: "10px",
+    fontSize: "x-large",
+    fontWeight: "500",
+    textAlign: "center",
+  },
 };
+
 
 function Favorite() {
   const [productArray, setProductArray] = useState([]);
@@ -38,6 +46,9 @@ function Favorite() {
   return (
     <>
       <NavbarMenu />
+      <Typography style={(cardStyles.container, cardStyles.header)}>
+        Favorite Products
+      </Typography>
       <div style={cardStyles.container}>
         <div style={cardStyles.productContainer}>
           {productArray.map((data, index) => (

@@ -42,9 +42,13 @@ const cardStyles = {
 
 function Home() {
   const [productArray, setProductArray] = useState([]);
-  const [orderChecked, setOrderChecked] = React.useState([]);
-  const [priceChecked, setPriceChecked] = React.useState([]);
-  const [featureChecked, setFeatureChecked] = React.useState([]);
+  const [originalProductArray, setOriginalProductArray] = useState([]);
+  const [orderChecked, setOrderChecked] = React.useState("");
+  const [priceChecked, setPriceChecked] = React.useState("");
+  const [featureChecked, setFeatureChecked] = React.useState("");
+  const [discount, setDiscount] = React.useState(0.1);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   const orderStrings = ["Ascending price", "Descending price"];
   const priceString = [
     "Under 50 lei",
@@ -55,58 +59,114 @@ function Home() {
   const featureString = ["Only text", "Upload picture"];
 
   const handleToggleOrder = (value) => () => {
-    const currentIndex = orderChecked.indexOf(value);
-    const newChecked = [...orderChecked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
+    if (orderChecked === value) {
+      setOrderChecked("");
     } else {
-      newChecked.splice(currentIndex, 1);
+      setOrderChecked(value);
     }
-
-    setOrderChecked(newChecked);
   };
 
   const handleTogglePrice = (value) => () => {
-    const currentIndex = priceChecked.indexOf(value);
-    const newChecked = [...priceChecked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
+    if (priceChecked === value) {
+      setPriceChecked("");
     } else {
-      newChecked.splice(currentIndex, 1);
+      setPriceChecked(value);
     }
-
-    setPriceChecked(newChecked);
   };
 
   const handleToggleFeature = (value) => () => {
-    const currentIndex = featureChecked.indexOf(value);
-    const newChecked = [...featureChecked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
+    if (featureChecked === value) {
+      setFeatureChecked("");
     } else {
-      newChecked.splice(currentIndex, 1);
+      setFeatureChecked(value);
+    }
+  };
+
+  const handleDeleteFilters = () => {
+    setOrderChecked("");
+    setPriceChecked("");
+    setFeatureChecked("");
+  };
+
+  const filter = () => {
+    let filteredProductArray = [...originalProductArray];
+
+    if (priceChecked !== "") {
+      filteredProductArray = filteredProductArray.filter((element) => {
+        const price = element.label.includes("discount")
+          ? element.price - discount * element.price
+          : element.price;
+
+        if (
+          (priceChecked.includes(priceString[0]) && price <= 50) ||
+          (priceChecked.includes(priceString[1]) &&
+            price >= 50 &&
+            price <= 100) ||
+          (priceChecked.includes(priceString[2]) &&
+            price >= 100 &&
+            price <= 200) ||
+          (priceChecked.includes(priceString[3]) && price >= 200)
+        ) {
+          return element;
+        }
+      });
     }
 
-    setFeatureChecked(newChecked);
+    if (orderChecked === orderStrings[0]) {
+      filteredProductArray.sort((a, b) => {
+        const priceA = a.label.includes("discount")
+          ? a.price - discount * a.price
+          : a.price;
+        const priceB = b.label.includes("discount")
+          ? b.price - discount * b.price
+          : b.price;
+        return priceA - priceB;
+      });
+    } else if (orderChecked === orderStrings[1]) {
+      filteredProductArray.sort((a, b) => {
+        const priceA = a.label.includes("discount")
+          ? a.price - discount * a.price
+          : a.price;
+        const priceB = b.label.includes("discount")
+          ? b.price - discount * b.price
+          : b.price;
+        return priceB - priceA;
+      });
+    }
+
+    if (featureChecked.includes(featureString[0])) {
+      filteredProductArray = filteredProductArray.filter((element) => {
+        return element.label.includes("text");
+      });
+    } else if (featureChecked.includes(featureString[1])) {
+      filteredProductArray = filteredProductArray.filter((element) => {
+        return element.label.includes("picture");
+      });
+    }
+
+    setProductArray([...filteredProductArray]);
   };
 
   useEffect(() => {
     axios.defaults.withCredentials = true;
     axios
-      .get("http://localhost:8081/api/product/getAllProducts", {
-        withCredentials: true,
-      })
+      .get("http://localhost:8081/api/product/getAllProducts")
       .then((res) => {
         console.log(res.data);
         setProductArray(res.data);
+        setOriginalProductArray(res.data);
+        setIsLoaded(true);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      filter();
+    }
+  }, [orderChecked, priceChecked, featureChecked, isLoaded]);
 
   return (
     <>
@@ -126,13 +186,13 @@ function Home() {
                 <ListItem key={index} disablePadding>
                   <ListItemButton
                     role={undefined}
-                    onClick={handleToggleOrder(index)}
+                    onClick={handleToggleOrder(customString)}
                     dense
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
-                        checked={orderChecked.indexOf(index) !== -1}
+                        checked={orderChecked === customString}
                         tabIndex={-1}
                         disableRipple
                         style={{ color: "#9a044c" }}
@@ -162,13 +222,13 @@ function Home() {
                 <ListItem key={index} disablePadding>
                   <ListItemButton
                     role={undefined}
-                    onClick={handleTogglePrice(index)}
+                    onClick={handleTogglePrice(customString)}
                     dense
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
-                        checked={priceChecked.indexOf(index) !== -1}
+                        checked={priceChecked === customString}
                         tabIndex={-1}
                         disableRipple
                         style={{ color: "#9a044c" }}
@@ -194,13 +254,13 @@ function Home() {
                 <ListItem key={index} disablePadding>
                   <ListItemButton
                     role={undefined}
-                    onClick={handleToggleFeature(index)}
+                    onClick={handleToggleFeature(customString)}
                     dense
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
-                        checked={featureChecked.indexOf(index) !== -1}
+                        checked={featureChecked === customString}
                         tabIndex={-1}
                         disableRipple
                         style={{ color: "#9a044c" }}
@@ -216,7 +276,10 @@ function Home() {
           <div
             style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}
           >
-            <IconButton style={{ color: "#9a044c" }}>
+            <IconButton
+              style={{ color: "#9a044c" }}
+              onClick={() => handleDeleteFilters()}
+            >
               <HighlightOffIcon />
             </IconButton>
             <div style={{ fontWeight: "500" }}> Delete filters</div>

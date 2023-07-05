@@ -6,6 +6,7 @@ const { ObjectId } = require("mongodb");
 
 const controller = {
   addProductToCart: async (req, res) => {
+    console.log(req.body);
     const productId = req.params.id;
     const productDocument = await ProductSchema.findOne({
       _id: new ObjectId(productId),
@@ -26,10 +27,18 @@ const controller = {
           });
 
           if (cartProduct) {
-            cartProduct.quantity++;
+            if (req.body.quantity) {
+              cartProduct.quantity += Number(req.body.quantity);
+            } else {
+              cartProduct.quantity++;
+            }
+            if (req.body.personalization) {
+              cartProduct.personalization = req.body.personalization;
+            }
             cartProduct
               .save()
               .then((newProduct) => {
+                console.log(newProduct);
                 res.status(200).send(newProduct);
               })
               .catch((err) => {
@@ -37,10 +46,19 @@ const controller = {
                 res.status(500).send(err);
               });
           } else {
+            let quantity = 1;
+            if (req.body.quantity) {
+              quantity = req.body.quantity;
+            }
+            let personalization = null;
+            if (req.body.personalization) {
+              personalization = req.body.personalization;
+            }
             const response = await CartSchema.create({
               userId: userId,
               productId: productId,
-              quantity: 1,
+              quantity: quantity,
+              personalization: personalization,
             });
             res
               .status(200)
@@ -81,6 +99,7 @@ const controller = {
             _id: cartProduct._id,
             product: product,
             orderedQuantity: cartProduct.quantity,
+            personalization: cartProduct.personalization,
           };
         });
         res.status(200).send(cartProductsComplete);
@@ -168,12 +187,10 @@ const controller = {
       const cookieObject = cookiesToObject(req.headers.cookie);
       if (cookieObject.jwt) {
         const userId = jwt.verify(cookieObject.jwt, process.env.JWT_SECRET).id;
-
         const cartProduct = await CartSchema.findOne({
           _id: new ObjectId(req.params.id),
           userId: userId,
         });
-
         if (cartProduct) {
           cartProduct.quantity = req.body.orderedQuantity;
           cartProduct

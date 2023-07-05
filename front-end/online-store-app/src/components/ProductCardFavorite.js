@@ -48,13 +48,15 @@ function ProductCard(props) {
           sx={{ left: "200px", bottom: "-48px", position: "relative" }}
           onClick={() => handleFavorites(props)}
         >
-          {!isFavorite && <FavoriteBorderOutlinedIcon  style={{ color: "#d98bad" }} />}
-          {isFavorite && <FavoriteIcon  style={{ color: "#d98bad" }} />}
+          {!isFavorite && (
+            <FavoriteBorderOutlinedIcon style={{ color: "#d98bad" }} />
+          )}
+          {isFavorite && <FavoriteIcon style={{ color: "#d98bad" }} />}
         </IconButton>
       </Box>
       <Card sx={{ maxWidth: 345 }}>
         <img
-          src={props.data.image}
+          src={`product_pictures/${props.data.image}`}
           alt="Product"
           width="250px"
           height="225px"
@@ -66,6 +68,13 @@ function ProductCard(props) {
             sx={{ textAlign: "center" }}
           >
             {props.data.name}
+          </Typography>
+          <Typography
+            variant="subtitle2"
+            gutterBottom
+            sx={{ textAlign: "center", maxWidth: "200px" }}
+          >
+            {props.data.description}
           </Typography>
           <Typography
             variant="subtitle1"

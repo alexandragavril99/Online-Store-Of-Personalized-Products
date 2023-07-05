@@ -111,7 +111,11 @@ const controller = {
                 price: product.price,
                 image: product.image.toString("base64"),
                 quantity: product.quantity,
+                description: product.description,
                 isFavorite: true,
+                personalization: product.personalization
+                  ? product.personalization
+                  : null,
               };
               productList.push(favoriteProduct);
             });
@@ -126,6 +130,38 @@ const controller = {
     }
     res.status(403).send({ message: "Token is missing." });
     return;
+  },
+
+  updateFromFavorites: async (req, res) => {
+    if (req.headers.cookie) {
+      const cookieObject = cookiesToObject(req.headers.cookie);
+      if (cookieObject.jwt) {
+        const userId = jwt.verify(cookieObject.jwt, process.env.JWT_SECRET).id;
+        const favoriteProduct = await FavoriteSchema.findOne({
+          productId: new ObjectId(req.params.id),
+          userId: userId,
+        });
+        if (favoriteProduct) {
+          favoriteProduct.personalization = req.body.personalization;
+          favoriteProduct
+            .save()
+            .then((item) => {
+              res
+                .status(200)
+                .send({ message: "Favorite product updated.", item: item });
+            })
+            .catch((err) => {
+              res.status(500).send(err);
+            });
+        } else {
+          res.status(404).send({ message: "Favorite product not found." });
+        }
+      } else {
+        res.status(403).send({ message: "Token invalid." });
+      }
+    } else {
+      res.status(403).send({ message: "Token is missing." });
+    }
   },
 };
 

@@ -1,6 +1,12 @@
 import { Button } from "@mui/material";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Typography from "@mui/material/Typography";
+import { withStyles } from "@mui/styles";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import { useState, useEffect } from "react";
 
 const styles = {
   section: {
@@ -16,12 +22,32 @@ const styles = {
     justifyContent: "space-between",
   },
 };
+
+const CustomRadio = withStyles({
+  root: {
+    color: "#9a044c", // Set your desired color here
+    "&$checked": {
+      color: "#9a044c", // Set the checked color here (if different)
+    },
+  },
+  checked: {},
+})((props) => <Radio color="default" {...props} />);
+
 function DeliveryOptions(props) {
   const handleContinueButton = () => {
     props.onChangeStep({
       step: 2,
     });
   };
+
+  const [deliveryMethod, setDeliveryMethod] = useState("Home delivery");
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    console.log(sessionStorage.getItem("totalPrice"));
+    setTotalPrice(Number(sessionStorage.getItem("totalPrice")));
+  });
+
   return (
     <>
       <div
@@ -71,6 +97,32 @@ function DeliveryOptions(props) {
                 <div style={{ fontStyle: "italic" }}>free</div>
               </div>
             </div>
+            {/* <FormControl
+              style={{
+                marginBottom: "15px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="row-radio-buttons-group"
+                value={deliveryMethod}
+                onChange={(event) => setDeliveryMethod(event.target.value)}
+              >
+                <FormControlLabel
+                  value="Home delivery"
+                  control={<CustomRadio />}
+                  label="Home delivery"
+                />
+                <FormControlLabel
+                  value="Personal pickup from the store"
+                  control={<CustomRadio />}
+                  label="Personal pickup from the store"
+                />
+              </RadioGroup>
+            </FormControl> */}
           </div>
           <div className="col-sm">
             <h4 htmlFor="payment-method">Payment method</h4>
@@ -131,10 +183,13 @@ function DeliveryOptions(props) {
         >
           <div>
             Products price:{" "}
-            <label style={{ fontWeight: "600" }}> 264.54 RON </label> + Delivery
-            method: <label style={{ fontWeight: "600" }}>free</label> + Payment
-            method: <label style={{ fontWeight: "600" }}>free</label> ={" "}
-            <label style={{ fontWeight: "600" }}> 264.54 RON</label>
+            <label style={{ fontWeight: "600" }}>
+              {totalPrice.toFixed(2)} RON
+            </label>{" "}
+            + Delivery method: <label style={{ fontWeight: "600" }}>free</label>{" "}
+            + Payment method: <label style={{ fontWeight: "600" }}>free</label>{" "}
+            ={" "}
+            <label style={{ fontWeight: "600" }}>{totalPrice.toFixed(2)}</label>
           </div>
         </div>
         <div

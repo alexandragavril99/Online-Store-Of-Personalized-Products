@@ -18,6 +18,7 @@ function Delivery() {
       return {
         name: item.product.name,
         price: item.product.price,
+        label: item.product.label,
         description: item.product.description,
         orderedQuantity: item.orderedQuantity,
       };
@@ -47,8 +48,21 @@ function Delivery() {
           .post(
             "http://localhost:8081/api/stripe/create-checkout-session",
             {
-              newProducts: newProducts,
+              products: newProducts,
               orderId: orderId,
+              customerData: {
+                surname: data.surname,
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+              },
+              shippingAddress: {
+                county: data.county,
+                city: data.city,
+                street: data.street,
+                postalCode: data.postalCode,
+                otherInfo: data.otherInfo,
+              },
             },
             { withCredentials: true }
           )
@@ -74,7 +88,13 @@ function Delivery() {
         let productsFromCart = res.data;
         let price = 0;
         productsFromCart.map((item) => {
-          price += item.product.price * item.orderedQuantity;
+          if (!item.product.label.includes("discount")) {
+            price += item.product.price * item.orderedQuantity;
+          } else {
+            price +=
+              (item.product.price - 0.1 * item.product.price) *
+              item.orderedQuantity;
+          }
         });
         setTotalPrice(price);
       })
@@ -86,10 +106,17 @@ function Delivery() {
   return (
     <>
       <NavbarMenu />
-      <div>{step === 1 && <DeliveryOptions onChangeStep={onChangeStep} />}</div>
+      <div>
+        {step === 1 && (
+          <DeliveryOptions onChangeStep={onChangeStep}/>
+        )}
+      </div>
       <div>
         {step === 2 && (
-          <AddressForm onSubmitAddressForm={onSubmitAddressForm} data={products}/>
+          <AddressForm
+            onSubmitAddressForm={onSubmitAddressForm}
+            data={products}
+          />
         )}
       </div>
     </>

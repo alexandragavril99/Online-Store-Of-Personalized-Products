@@ -21,6 +21,10 @@ code {
     text-align: center;
 }
 
+.custom-modal {
+  backdrop-filter: none;
+}
+
 
 /* @font-face {
   font-family: 'Montserrat', 'Roboto', sans-serif;

@@ -5,9 +5,10 @@ require("dotenv").config();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 router.post("/create-checkout-session", async (req, res) => {
-  const products = req.body.newProducts;
+  const products = req.body.products;
   const orderId = req.body.orderId;
-  console.log(products);
+  const customerData = req.body.customerData;
+  const shippingAddress = req.body.shippingAddress;
   const line_items = products.map((item) => {
     return {
       price_data: {
@@ -24,8 +25,24 @@ router.post("/create-checkout-session", async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     line_items,
     mode: "payment",
-    success_url: `${process.env.CLIENT_URL}/checkout-success?data=${encodeURIComponent(JSON.stringify(orderId))}`,
+    success_url: `${
+      process.env.CLIENT_URL
+    }/checkout-success?data=${encodeURIComponent(JSON.stringify(orderId))}`,
     cancel_url: `${process.env.CLIENT_URL}/cart`,
+    // customer_email: customerData.email,
+    // payment_intent_data: {
+    //   shipping: {
+    //     name: customerData.surname + " " + customerData.name,
+    //     address: {
+    //       line1: shippingAddress.street,
+    //       city: shippingAddress.city,
+    //       state: shippingAddress.county,
+    //       postal_code: shippingAddress.postalCode,
+    //       line2: shippingAddress.otherInfo,
+    //       country: "RO",
+    //     },
+    //   },
+    // },
   });
 
   res.send({ url: session.url });

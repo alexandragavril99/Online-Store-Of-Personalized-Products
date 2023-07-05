@@ -9,6 +9,9 @@ const favoriteSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  personalization: {
+    type: Array,
+  },
 });
 
 module.exports = mongoose.model("Favorite", favoriteSchema);

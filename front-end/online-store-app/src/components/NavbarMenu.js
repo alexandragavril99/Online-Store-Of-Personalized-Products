@@ -23,6 +23,8 @@ import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import * as React from "react";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import PeopleIcon from "@mui/icons-material/People";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -102,6 +104,12 @@ function NavbarMenu() {
             >
               <HomeIcon />
             </IconButton>
+            {/* <IconButton
+              onClick={() => navigate("/statistics")}
+              style={{ color: "#9a044c" }}
+            >
+              <AnalyticsIcon />
+            </IconButton> */}
             <IconButton
               onClick={() => navigate("/favorites")}
               style={{ color: "#9a044c" }}
@@ -231,6 +239,22 @@ function NavbarMenu() {
             </Nav.Link>
           </Nav>
         </Container>
+        {/* <Container>
+          <Nav style={{ fontFamily: "'Montserrat', sans-serif" }}>
+            <Nav.Link
+              href="#home"
+              style={{ color: "#9a044c", fontWeight: "500" }}
+            >
+              Home
+            </Nav.Link>
+            <Nav.Link
+              href="#features"
+              style={{ color: "#9a044c", fontWeight: "500" }}
+            >
+              Statistics
+            </Nav.Link>
+          </Nav>
+        </Container> */}
       </Navbar>
     </>
   );

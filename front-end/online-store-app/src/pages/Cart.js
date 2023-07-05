@@ -81,9 +81,16 @@ function Cart() {
     setProductArray(newProductArray);
     let price = 0;
     newProductArray.map((data, index) => {
-      price += data.product.price * data.orderedQuantity;
+      if (!data.product.label.includes("discount")) {
+        price += data.product.price * data.orderedQuantity;
+      } else {
+        price +=
+          (data.product.price - 0.1 * data.product.price) *
+          data.orderedQuantity;
+      }
     });
     setTotalPrice(price);
+    sessionStorage.setItem("totalPrice", price);
     axios
       .put(
         `http://localhost:8081/api/cart/updateProductQuantityFromCart/${newProductArray[index]._id}`,
@@ -105,9 +112,16 @@ function Cart() {
     setProductArray(newProductArray);
     let price = 0;
     newProductArray.map((data, index) => {
-      price += data.product.price * data.orderedQuantity;
+      if (!data.product.label.includes("discount")) {
+        price += data.product.price * data.orderedQuantity;
+      } else {
+        price +=
+          (data.product.price - 0.1 * data.product.price) *
+          data.orderedQuantity;
+      }
     });
     setTotalPrice(price);
+    sessionStorage.setItem("totalPrice", price);
     axios
       .delete(
         `http://localhost:8081/api/cart/deleteProductFromCart/${productId}`,
@@ -143,9 +157,16 @@ function Cart() {
   useEffect(() => {
     let price = 0;
     productArray.forEach((data, index) => {
-      price += data.product.price * data.orderedQuantity;
+      if (!data.product.label.includes("discount")) {
+        price += data.product.price * data.orderedQuantity;
+      } else {
+        price +=
+          (data.product.price - 0.1 * data.product.price) *
+          data.orderedQuantity;
+      }
     });
     setTotalPrice(price);
+    sessionStorage.setItem("totalPrice", price);
   }, [productArray]);
 
   return (
@@ -186,7 +207,7 @@ function Cart() {
                           }}
                         >
                           <img
-                            src={data.product.image}
+                            src={`product_pictures/${data.product.image}`}
                             alt="Product"
                             style={{
                               width: "100%",
@@ -203,7 +224,20 @@ function Cart() {
                         />
                       </div>
 
-                      <ListItemText primary={data.product.price + " RON"} />
+                      {!data.product.label.includes("discount") && (
+                        <ListItemText primary={data.product.price + " RON"} />
+                      )}
+
+                      {data.product.label.includes("discount") && (
+                        <ListItemText
+                          primary={
+                            (
+                              data.product.price -
+                              data.product.price * 0.1
+                            ).toFixed(2) + " RON"
+                          }
+                        />
+                      )}
                       <select
                         className="form-select"
                         style={{ width: "100px" }}
@@ -213,14 +247,33 @@ function Cart() {
                         <option value="1">1 item</option>
                         <option value="2">2 items</option>
                         <option value="3">3 items</option>
+                        <option value="4">4 items</option>
+                        <option value="5">5 items</option>
+                        <option value="6">6 items</option>
+                        <option value="7">7 items</option>
+                        <option value="8">8 items</option>
+                        <option value="9">9 items</option>
+                        <option value="10">10 items</option>
                       </select>
-                      <ListItemText
-                        primary={
-                          (data.product.price * data.orderedQuantity).toFixed(
-                            2
-                          ) + " RON"
-                        }
-                      />
+                      {!data.product.label.includes("discount") && (
+                        <ListItemText
+                          primary={
+                            (data.product.price * data.orderedQuantity).toFixed(
+                              2
+                            ) + " RON"
+                          }
+                        />
+                      )}
+                      {data.product.label.includes("discount") && (
+                        <ListItemText
+                          primary={
+                            (
+                              (data.product.price - 0.1 * data.product.price) *
+                              data.orderedQuantity
+                            ).toFixed(2) + " RON"
+                          }
+                        />
+                      )}
                       {open[index] ? (
                         <ExpandLess
                           onClick={() => {
@@ -238,10 +291,60 @@ function Cart() {
                     <Collapse in={open[index]} timeout="auto" unmountOnExit>
                       <List component="div" disablePadding>
                         <ListItemButton sx={{ pl: 4 }}>
-                          <ListItemIcon>
+                          {data.personalization &&
+                            data.personalization.map((obj, index) => {
+                              return (
+                                <ListItem
+                                  key={index}
+                                  disablePadding
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  {obj.text && (
+                                    <Typography
+                                      variant="subtitle-2"
+                                      gutterBottom
+                                      style={{
+                                        fontFamily: "'Montserrat', sans-serif",
+                                      }}
+                                    >
+                                      Personalized text: {obj.text}
+                                    </Typography>
+                                  )}
+
+                                  {obj.image && (
+                                    <Typography
+                                      variant="subtitle-2"
+                                      gutterBottom
+                                      style={{
+                                        fontFamily: "'Montserrat', sans-serif",
+                                      }}
+                                    >
+                                      Selected picture:
+                                      {obj.image && (
+                                        <div className="cropped-image-container">
+                                          {obj.image && (
+                                            <img
+                                              className="cropped-image"
+                                              src={obj.image}
+                                              alt="cropped"
+                                              height={50}
+                                              style={{ margin: "10px" }}
+                                            />
+                                          )}
+                                        </div>
+                                      )}
+                                    </Typography>
+                                  )}
+                                </ListItem>
+                              );
+                            })}
+                          {/* <ListItemIcon>
                             <StarBorder />
                           </ListItemIcon>
-                          <ListItemText primary="Starred" />
+                          <ListItemText primary="Starred" /> */}
                         </ListItemButton>
                       </List>
                     </Collapse>
@@ -256,7 +359,7 @@ function Cart() {
           display: "flex",
           flexDirection: "column",
           marginLeft: "25%",
-          marginTop: "1%",
+          marginTop: "2%",
         }}
       >
         <label
@@ -267,7 +370,7 @@ function Cart() {
         <div class="input-group" style={{ width: "300px" }}>
           <input
             type="text"
-            class="form-control"
+            className="form-control"
             placeholder="Insert here your voucher"
             aria-describedby="basic-addon2"
           />
@@ -301,7 +404,11 @@ function Cart() {
           marginTop: "3%",
         }}
       >
-        <Button variant="contained" style={{ background: "#9a044c" }}>
+        <Button
+          variant="contained"
+          style={{ background: "#9a044c" }}
+          onClick={() => navigate("/home")}
+        >
           Back to shopping
         </Button>
         <Button

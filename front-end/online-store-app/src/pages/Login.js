@@ -20,6 +20,7 @@ const cardStyles = {
     flexDirection: "column",
     justifyContent: "center",
     width: "100%",
+    fontFamily: "'Montserrat', sans-serif",
   },
   input: {
     margin: "10px",
@@ -48,7 +49,7 @@ function Login() {
           autoClose: 3000,
         });
         document.cookie = "jwt=" + res.data.token;
-        sessionStorage.setItem("token", res.data.token);
+        axios.defaults.withCredentials = true;
         navigate("/home");
       })
       .catch((err) => {
@@ -70,11 +71,11 @@ function Login() {
       <ThemeProvider theme={theme}>
         <Card
           sx={{
-            width: "60%",
+            width: "70%",
             display: "flex",
           }}
         >
-          <img src={LoginIcon} alt="Login Icon" width={"50%"} />
+          <img src={LoginIcon} alt="Login Icon" width={"40%"} />
           <form onSubmit={handleSubmit} style={cardStyles.inputContainer}>
             <CardContent className="center-element">
               <Typography

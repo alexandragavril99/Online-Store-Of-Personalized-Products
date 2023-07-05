@@ -216,7 +216,7 @@ function AddressForm(props) {
                   >
                     <div>
                       <img
-                        src={item.product.image}
+                        src={`product_pictures/${item.product.image}`}
                         alt="Product"
                         style={{
                           width: "100%",

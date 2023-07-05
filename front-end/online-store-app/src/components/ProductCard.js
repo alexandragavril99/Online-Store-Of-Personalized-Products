@@ -25,10 +25,7 @@ function ProductCard(props) {
     if (!isFavorite) {
       axios
         .post(
-          `http://localhost:8081/api/favorite/addToFavorites/${props.data.id}`,
-          {
-            withCredentials: true,
-          }
+          `http://localhost:8081/api/favorite/addToFavorites/${props.data.id}`
         )
         .then((res) => {
           console.log(res.data);
@@ -39,10 +36,7 @@ function ProductCard(props) {
     } else {
       axios
         .delete(
-          `http://localhost:8081/api/favorite/deleteProductFromFavorites/${props.data.id}`,
-          {
-            withCredentials: true,
-          }
+          `http://localhost:8081/api/favorite/deleteProductFromFavorites/${props.data.id}`
         )
         .then((res) => {
           console.log(res.data);
@@ -85,6 +79,7 @@ function ProductCard(props) {
               fontWeight: "600",
               borderColor: "#9a044c",
               border: "2px solid",
+              background: "white",
             }}
             variant="outlined"
             sx={{ bottom: "-48px", position: "relative" }}
@@ -123,7 +118,7 @@ function ProductCard(props) {
         onClick={() => navigate("/details", { state: { product: props.data } })}
       >
         <img
-          src={props.data.image}
+          src={`product_pictures/${props.data.image}`}
           alt="Product"
           width="250px"
           height="225px"
@@ -173,7 +168,7 @@ function ProductCard(props) {
                 }}
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
-                {props.data.price - 0.1 * props.data.price} lei
+                {(props.data.price - 0.1 * props.data.price).toFixed(2)} lei
               </Typography>
             </div>
           )}

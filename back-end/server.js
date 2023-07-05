@@ -10,5 +10,5 @@ mongoose
     app.listen(config.PORT, console.log(`Server is running on ${config.PORT}`));
   })
   .catch((err) => {
-    console.log("Connection unsuccessfull", err);
+    console.log("Connection failed! ", err);
   });
