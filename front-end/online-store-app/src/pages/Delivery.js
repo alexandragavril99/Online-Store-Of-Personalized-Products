@@ -19,8 +19,10 @@ function Delivery() {
         name: item.product.name,
         price: item.product.price,
         label: item.product.label,
+        image: item.product.image,
         description: item.product.description,
         orderedQuantity: item.orderedQuantity,
+        personalization: item.personalization ? item.personalization : null,
       };
     });
     console.log(products);
@@ -34,6 +36,8 @@ function Delivery() {
       street: data.street,
       postalCode: data.postalCode,
       otherInfo: data.otherInfo,
+      city: data.city,
+      county: data.county,
       products: newProducts,
       totalPrice: totalPrice,
     };
@@ -106,11 +110,7 @@ function Delivery() {
   return (
     <>
       <NavbarMenu />
-      <div>
-        {step === 1 && (
-          <DeliveryOptions onChangeStep={onChangeStep}/>
-        )}
-      </div>
+      <div>{step === 1 && <DeliveryOptions onChangeStep={onChangeStep} />}</div>
       <div>
         {step === 2 && (
           <AddressForm

@@ -11,7 +11,11 @@ import Payment from "./pages/Payment";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import Statistics from "./pages/Statistics";
 import { ToastContainer, toast } from "react-toastify";
+import DiscountProducts from "./pages/DiscountProducts";
 import "react-toastify/dist/ReactToastify.css";
+import NewProducts from "./pages/NewProducts";
+import OrderHistory from "./pages/OrderHistory";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -28,6 +32,10 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/statistics" element={<Statistics />} />
         <Route path="checkout-success" element={<CheckoutSuccess />} />
+        <Route path="/discount" element={<DiscountProducts />} />
+        <Route path="/new" element={<NewProducts />} />
+        <Route path="/history" element={<OrderHistory />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );

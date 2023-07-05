@@ -68,6 +68,7 @@ function Cart() {
   const [productArray, setProductArray] = React.useState([]);
   const [totalPrice, setTotalPrice] = React.useState(0);
   const navigate = useNavigate();
+  const [personalization, setPersonalization] = React.useState([]);
 
   const handleClick = (index) => {
     const updatedOpen = [...open];
@@ -146,7 +147,13 @@ function Cart() {
       })
       .then((res) => {
         console.log(res.data);
-        setProductArray(res.data);
+        let data = res.data;
+        data.map((obj, index) => {
+          if (obj.personalization) {
+            obj.personalization = JSON.parse(obj.personalization[0]);
+          }
+        });
+        setProductArray(data);
         setOpen(Array(res.data.length).fill(false));
       })
       .catch((err) => {
@@ -290,18 +297,17 @@ function Cart() {
                     </ListItem>
                     <Collapse in={open[index]} timeout="auto" unmountOnExit>
                       <List component="div" disablePadding>
-                        <ListItemButton sx={{ pl: 4 }}>
+                        <ListItemButton
+                          sx={{
+                            pl: 4,
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
                           {data.personalization &&
                             data.personalization.map((obj, index) => {
                               return (
-                                <ListItem
-                                  key={index}
-                                  disablePadding
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                  }}
-                                >
+                                <ListItem key={index} disablePadding>
                                   {obj.text && (
                                     <Typography
                                       variant="subtitle-2"
@@ -314,12 +320,26 @@ function Cart() {
                                     </Typography>
                                   )}
 
+                                  {obj.size && (
+                                    <Typography
+                                      variant="subtitle-2"
+                                      gutterBottom
+                                      style={{
+                                        fontFamily: "'Montserrat', sans-serif",
+                                      }}
+                                    >
+                                      Selected size: {obj.size}
+                                    </Typography>
+                                  )}
+
                                   {obj.image && (
                                     <Typography
                                       variant="subtitle-2"
                                       gutterBottom
                                       style={{
                                         fontFamily: "'Montserrat', sans-serif",
+                                        display: "flex",
+                                        alignItems: "center",
                                       }}
                                     >
                                       Selected picture:
@@ -328,7 +348,7 @@ function Cart() {
                                           {obj.image && (
                                             <img
                                               className="cropped-image"
-                                              src={obj.image}
+                                              src={`product_pictures/${obj.image}`}
                                               alt="cropped"
                                               height={50}
                                               style={{ margin: "10px" }}
@@ -341,52 +361,58 @@ function Cart() {
                                 </ListItem>
                               );
                             })}
-                          {/* <ListItemIcon>
-                            <StarBorder />
-                          </ListItemIcon>
-                          <ListItemText primary="Starred" /> */}
                         </ListItemButton>
                       </List>
                     </Collapse>
                   </div>
                 ))}
             </List>
+            {productArray.length === 0 && (
+              <Typography style={(cartStyles.container, cartStyles.header)}>
+                No products in shopping cart.
+              </Typography>
+            )}
           </Demo>
         </Grid>
       </Box>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          marginLeft: "25%",
-          marginTop: "2%",
-        }}
-      >
-        <label
-          style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: "500" }}
+      {productArray.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginLeft: "25%",
+            marginTop: "2%",
+          }}
         >
-          Insert voucher
-        </label>
-        <div class="input-group" style={{ width: "300px" }}>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Insert here your voucher"
-            aria-describedby="basic-addon2"
-          />
-          <div class="input-group-append">
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              style={{
-                borderRadius: "0 5px 5px 0",
-              }}
-            >
-              OK
-            </button>
+          <label
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontWeight: "500",
+            }}
+          >
+            Insert voucher
+          </label>
+          <div class="input-group" style={{ width: "300px" }}>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Insert here your voucher"
+              aria-describedby="basic-addon2"
+            />
+            <div class="input-group-append">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                style={{
+                  borderRadius: "0 5px 5px 0",
+                }}
+              >
+                OK
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div style={cartStyles.priceContainer}>
         <Typography
           sx={{ mt: 4, mb: 2 }}
@@ -402,6 +428,7 @@ function Cart() {
           display: "flex",
           justifyContent: "space-around",
           marginTop: "3%",
+          marginBottom: "3%",
         }}
       >
         <Button

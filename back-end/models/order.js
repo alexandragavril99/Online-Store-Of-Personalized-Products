@@ -22,6 +22,8 @@ const orderSchema = mongoose.Schema({
   postalCode: {
     type: String,
   },
+  county: { type: String },
+  city: { type: String },
   otherInfo: {
     type: String,
   },
@@ -33,6 +35,9 @@ const orderSchema = mongoose.Schema({
   },
   status: {
     type: String,
+  },
+  date: {
+    type: Date,
   },
 });
 

@@ -73,11 +73,11 @@ function Register() {
       <ThemeProvider theme={theme}>
         <Card
           sx={{
-            width: "60%",
+            width: "70%",
             display: "flex",
           }}
         >
-          <img src={LoginIcon} alt="Login Icon" width={"50%"} />
+          <img src={LoginIcon} alt="Login Icon" width={"40%"} />
           <form onSubmit={handleSubmit} style={cardStyles.inputContainer}>
             <CardContent className="center-element">
               <Typography

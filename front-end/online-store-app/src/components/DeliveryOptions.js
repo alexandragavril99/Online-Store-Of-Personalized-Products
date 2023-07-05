@@ -7,6 +7,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const styles = {
   section: {
@@ -42,6 +43,7 @@ function DeliveryOptions(props) {
 
   const [deliveryMethod, setDeliveryMethod] = useState("Home delivery");
   const [totalPrice, setTotalPrice] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(sessionStorage.getItem("totalPrice"));
@@ -189,7 +191,9 @@ function DeliveryOptions(props) {
             + Delivery method: <label style={{ fontWeight: "600" }}>free</label>{" "}
             + Payment method: <label style={{ fontWeight: "600" }}>free</label>{" "}
             ={" "}
-            <label style={{ fontWeight: "600" }}>{totalPrice.toFixed(2)}</label>
+            <label style={{ fontWeight: "600" }}>
+              {totalPrice.toFixed(2)} RON
+            </label>
           </div>
         </div>
         <div
@@ -199,7 +203,11 @@ function DeliveryOptions(props) {
             marginTop: "3%",
           }}
         >
-          <Button variant="contained" style={{ background: "#9a044c" }}>
+          <Button
+            variant="contained"
+            style={{ background: "#9a044c" }}
+            onClick={() => navigate("/home")}
+          >
             Back to shopping
           </Button>
           <Button

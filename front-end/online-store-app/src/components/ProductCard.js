@@ -12,6 +12,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Chip from "@mui/material/Chip";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ProductCard(props) {
   const navigate = useNavigate();
@@ -58,6 +60,10 @@ function ProductCard(props) {
       )
       .then((res) => {
         console.log(res.data);
+        toast.success("Product added to cart!", {
+          position: toast.POSITION.BOTTOM_CENTER,
+          autoClose: 3000,
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -85,32 +91,48 @@ function ProductCard(props) {
             sx={{ bottom: "-48px", position: "relative" }}
           />
         )}
-        {props.data.label.includes("discount") && (
-          <IconButton
-            color="primary"
-            aria-label="add"
-            sx={{ left: "135px", bottom: "-48px", position: "relative" }}
-            onClick={() => handleFavorites(props)}
-          >
-            {!isFavorite && (
-              <FavoriteBorderOutlinedIcon style={{ color: "#d98bad" }} />
-            )}
-            {isFavorite && <FavoriteIcon style={{ color: "#d98bad" }} />}
-          </IconButton>
+        {props.data.label.includes("new") && (
+          <Chip
+            label="NEW"
+            style={{
+              color: "#9a044c",
+              fontWeight: "600",
+              borderColor: "#9a044c",
+              border: "2px solid",
+              background: "white",
+            }}
+            variant="outlined"
+            sx={{ bottom: "-48px", position: "relative" }}
+          />
         )}
-        {!props.data.label.includes("discount") && (
-          <IconButton
-            color="primary"
-            aria-label="add"
-            sx={{ left: "200px", bottom: "-48px", position: "relative" }}
-            onClick={() => handleFavorites(props)}
-          >
-            {!isFavorite && (
-              <FavoriteBorderOutlinedIcon style={{ color: "#d98bad" }} />
-            )}
-            {isFavorite && <FavoriteIcon style={{ color: "#d98bad" }} />}
-          </IconButton>
-        )}
+        {((props.data.label.includes("discount") ||
+          props.data.label.includes("new")) && (
+            <IconButton
+              color="primary"
+              aria-label="add"
+              sx={{ left: "135px", bottom: "-48px", position: "relative" }}
+              onClick={() => handleFavorites(props)}
+            >
+              {!isFavorite && (
+                <FavoriteBorderOutlinedIcon style={{ color: "#d98bad" }} />
+              )}
+              {isFavorite && <FavoriteIcon style={{ color: "#d98bad" }} />}
+            </IconButton>
+          ))}
+        {(!props.data.label.includes("discount") &&
+          !props.data.label.includes("new")) && (
+            <IconButton
+              color="primary"
+              aria-label="add"
+              sx={{ left: "200px", bottom: "-48px", position: "relative" }}
+              onClick={() => handleFavorites(props)}
+            >
+              {!isFavorite && (
+                <FavoriteBorderOutlinedIcon style={{ color: "#d98bad" }} />
+              )}
+              {isFavorite && <FavoriteIcon style={{ color: "#d98bad" }} />}
+            </IconButton>
+          )}
       </Box>
 
       <Card

@@ -16,11 +16,14 @@ const controller = {
           email: req.body.email,
           phone: req.body.phone,
           street: req.body.street,
+          county: req.body.county,
+          city: req.body.city,
           postalCode: req.body.postalCode,
           otherInfo: req.body.otherInfo,
           products: req.body.products,
           totalPrice: req.body.totalPrice,
-          status: "In processing",
+          status: "Done",
+          date: new Date(),
         };
 
         const response = await OrderSchema.create(order);
@@ -77,6 +80,30 @@ const controller = {
 
         if (order) {
           res.status(200).send(order);
+          return;
+        } else {
+          res.status(404).send({ message: "Order not found." });
+          return;
+        }
+      }
+      res.status(403).send({ message: "Token invalid." });
+      return;
+    }
+    res.status(403).send({ message: "Token is missing." });
+    return;
+  },
+
+  getOrdersById: async (req, res) => {
+    if (req.headers.cookie) {
+      const cookieObject = cookiesToObject(req.headers.cookie);
+      if (cookieObject.jwt) {
+        const userId = jwt.verify(cookieObject.jwt, process.env.JWT_SECRET).id;
+        const orders = await OrderSchema.find({
+          userId: userId,
+        }).sort({ date: -1 });
+
+        if (orders) {
+          res.status(200).send(orders);
           return;
         } else {
           res.status(404).send({ message: "Order not found." });

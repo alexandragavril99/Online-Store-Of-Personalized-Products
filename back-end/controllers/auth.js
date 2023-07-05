@@ -35,7 +35,7 @@ const controller = {
     res.cookie("jwt", token, cookieOptions);
     user.password = undefined;
     console.log("Successful login", token, user);
-    res.status(200).send({ token });
+    res.status(200).send({ token, user });
   },
 
   logout: async (req, res) => {

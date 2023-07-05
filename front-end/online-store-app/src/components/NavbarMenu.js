@@ -25,6 +25,10 @@ import Logout from "@mui/icons-material/Logout";
 import * as React from "react";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import PeopleIcon from "@mui/icons-material/People";
+import { useEffect } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -75,186 +79,322 @@ function NavbarMenu() {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
+    navigate("/history");
     setAnchorEl(null);
   };
+
+  const handleLogout = () => {
+    axios
+      .get("http://localhost:8081/api/logout", { withCredentials: true })
+      .then((res) => {
+        console.log(res.data);
+        toast.success("Logout successful!", {
+          position: toast.POSITION.BOTTOM_CENTER,
+          autoClose: 3000,
+        });
+        navigate("/login");
+        setAnchorEl(null);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const [user, setUser] = React.useState(null);
+
+  useEffect(() => {
+    axios.defaults.withCredentials = true;
+    axios
+      .get("http://localhost:8081/api/user/getUser")
+      .then((res) => {
+        console.log(res.data);
+        setUser(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <>
-      <Navbar>
-        <Container>
-          <Navbar.Brand href="#home">
-            <img
-              src={logo}
-              width={"100px"}
-              style={{ position: "absolute", top: "-16px" }}
-            ></img>
-          </Navbar.Brand>
-          <Search sx={{ right: "25%" }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
-          <Nav>
-            <IconButton
-              onClick={() => navigate("/home")}
-              style={{ color: "#9a044c" }}
-            >
-              <HomeIcon />
-            </IconButton>
-            {/* <IconButton
+      {user && !user.isAdmin && (
+        <Navbar>
+          <Container>
+            <Navbar.Brand href="/home">
+              <img
+                src={logo}
+                width={"100px"}
+                style={{ position: "absolute", top: "-16px" }}
+              ></img>
+            </Navbar.Brand>
+            <Search sx={{ right: "25%" }}>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+            <Nav>
+              <IconButton
+                onClick={() => navigate("/home")}
+                style={{ color: "#9a044c" }}
+              >
+                <HomeIcon />
+              </IconButton>
+              {/* <IconButton
               onClick={() => navigate("/statistics")}
               style={{ color: "#9a044c" }}
             >
               <AnalyticsIcon />
             </IconButton> */}
-            <IconButton
-              onClick={() => navigate("/favorites")}
-              style={{ color: "#9a044c" }}
-            >
-              <FavoriteIcon />
-            </IconButton>
-            <IconButton
-              onClick={() => navigate("/cart")}
-              style={{ color: "#9a044c" }}
-            >
-              <ShoppingBagIcon />
-            </IconButton>
-            <Stack direction="row" spacing={4} sx={{ marginLeft: "12px" }}>
-              <Avatar style={{ backgroundColor: "#d98bad" }}>AG</Avatar>
-            </Stack>
-            {/* <React.Fragment>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  textAlign: "center",
-                }}
+              <IconButton
+                onClick={() => navigate("/favorites")}
+                style={{ color: "#9a044c" }}
               >
-                <Tooltip title="Account settings">
-                  <IconButton
-                    onClick={handleClick}
-                    size="small"
-                    sx={{ ml: 2 }}
-                    aria-controls={open ? "account-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                  >
-                    <Avatar
-                      sx={{ width: 38, height: 38 }}
-                      style={{ backgroundColor: "#d98bad" }}
-                    >
-                      AG
-                    </Avatar>
-                  </IconButton>
-                </Tooltip>
-              </Box>
-              <Menu
-                anchorEl={anchorEl}
-                id="account-menu"
-                open={open}
-                onClose={handleClose}
-                onClick={handleClose}
-                PaperProps={{
-                  elevation: 0,
-                  sx: {
-                    overflow: "visible",
-                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                    mt: 1.5,
-                    "& .MuiAvatar-root": {
-                      width: 32,
-                      height: 32,
-                      ml: -0.5,
-                      mr: 1,
-                    },
-                    "&:before": {
-                      content: '""',
-                      display: "block",
-                      position: "absolute",
-                      top: 0,
-                      right: 14,
-                      width: 10,
-                      height: 10,
-                      bgcolor: "background.paper",
-                      transform: "translateY(-50%) rotate(45deg)",
-                      zIndex: 0,
-                    },
-                  },
-                }}
-                transformOrigin={{ horizontal: "right", vertical: "top" }}
-                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                <FavoriteIcon />
+              </IconButton>
+              <IconButton
+                onClick={() => navigate("/cart")}
+                style={{ color: "#9a044c" }}
               >
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> Profile
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> My account
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <PersonAdd fontSize="small" />
-                  </ListItemIcon>
-                  Add another account
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <Settings fontSize="small" />
-                  </ListItemIcon>
-                  Settings
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
-              </Menu>
-            </React.Fragment> */}
-          </Nav>
-        </Container>
-      </Navbar>
+                <ShoppingBagIcon />
+              </IconButton>
+              {/* {user && (
+              <Stack direction="row" spacing={4} sx={{ marginLeft: "12px" }}>
+                <Avatar style={{ backgroundColor: "#d98bad" }}>
+                  {user.firstName[0]}
+                  {user.lastName[0]}
+                </Avatar>
+              </Stack>
+            )} */}
+              <React.Fragment>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  {user && (
+                    <Tooltip title="Account settings">
+                      <IconButton
+                        onClick={handleClick}
+                        size="small"
+                        sx={{ ml: 2 }}
+                        aria-controls={open ? "account-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                      >
+                        <Avatar
+                          sx={{ width: 38, height: 38 }}
+                          style={{ backgroundColor: "#d98bad" }}
+                        >
+                          {user.firstName[0]}
+                          {user.lastName[0]}
+                        </Avatar>
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
+                <Menu
+                  anchorEl={anchorEl}
+                  id="account-menu"
+                  open={open}
+                  onClose={handleClose}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                      mt: 1.5,
+                      "& .MuiAvatar-root": {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      "&:before": {
+                        content: '""',
+                        display: "block",
+                        position: "absolute",
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: "background.paper",
+                        transform: "translateY(-50%) rotate(45deg)",
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                  <MenuItem onClick={() => handleClose()}>
+                    Order History
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={() => handleLogout()}>
+                    <ListItemIcon>
+                      <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </React.Fragment>
+            </Nav>
+          </Container>
+        </Navbar>
+      )}
+      {user && user.isAdmin && (
+        <Navbar>
+          <Container>
+            <Navbar.Brand href="/admin">
+              <img
+                src={logo}
+                width={"100px"}
+                style={{ position: "absolute", top: "-16px" }}
+              ></img>
+            </Navbar.Brand>
+            <Nav>
+              <IconButton
+                onClick={() => navigate("/admin")}
+                style={{ color: "#9a044c" }}
+              >
+                <HomeIcon />
+              </IconButton>
+              <IconButton
+                onClick={() => navigate("/statistics")}
+                style={{ color: "#9a044c" }}
+              >
+                <AnalyticsIcon />
+              </IconButton>
+              {/* {user && (
+              <Stack direction="row" spacing={4} sx={{ marginLeft: "12px" }}>
+                <Avatar style={{ backgroundColor: "#d98bad" }}>
+                  {user.firstName[0]}
+                  {user.lastName[0]}
+                </Avatar>
+              </Stack>
+            )} */}
+              <React.Fragment>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  {user && (
+                    <Tooltip title="Account settings">
+                      <IconButton
+                        onClick={handleClick}
+                        size="small"
+                        sx={{ ml: 2 }}
+                        aria-controls={open ? "account-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                      >
+                        <Avatar
+                          sx={{ width: 38, height: 38 }}
+                          style={{ backgroundColor: "#d98bad" }}
+                        >
+                          {user.firstName[0]}
+                          {user.lastName[0]}
+                        </Avatar>
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
+                <Menu
+                  anchorEl={anchorEl}
+                  id="account-menu"
+                  open={open}
+                  onClose={handleClose}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                      mt: 1.5,
+                      "& .MuiAvatar-root": {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      "&:before": {
+                        content: '""',
+                        display: "block",
+                        position: "absolute",
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: "background.paper",
+                        transform: "translateY(-50%) rotate(45deg)",
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                  <MenuItem onClick={() => handleLogout()}>
+                    <ListItemIcon>
+                      <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </React.Fragment>
+            </Nav>
+          </Container>
+        </Navbar>
+      )}
       <Navbar bg="light" variant="light">
-        <Container>
-          <Nav style={{ fontFamily: "'Montserrat', sans-serif" }}>
-            <Nav.Link
-              href="#home"
-              style={{ color: "#9a044c", fontWeight: "500" }}
-            >
-              Products
-            </Nav.Link>
-            <Nav.Link
-              href="#features"
-              style={{ color: "#9a044c", fontWeight: "500" }}
-            >
-              Discounts
-            </Nav.Link>
-            <Nav.Link
-              href="#pricing"
-              style={{ color: "#9a044c", fontWeight: "500" }}
-            >
-              New
-            </Nav.Link>
-          </Nav>
-        </Container>
-        {/* <Container>
-          <Nav style={{ fontFamily: "'Montserrat', sans-serif" }}>
-            <Nav.Link
-              href="#home"
-              style={{ color: "#9a044c", fontWeight: "500" }}
-            >
-              Home
-            </Nav.Link>
-            <Nav.Link
-              href="#features"
-              style={{ color: "#9a044c", fontWeight: "500" }}
-            >
-              Statistics
-            </Nav.Link>
-          </Nav>
-        </Container> */}
+        {user && !user.isAdmin && (
+          <Container>
+            <Nav style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              <Nav.Link
+                href="/home"
+                style={{ color: "#9a044c", fontWeight: "500" }}
+              >
+                Products
+              </Nav.Link>
+              <Nav.Link
+                href="/discount"
+                style={{ color: "#9a044c", fontWeight: "500" }}
+              >
+                Discounts
+              </Nav.Link>
+              <Nav.Link
+                href="/new"
+                style={{ color: "#9a044c", fontWeight: "500" }}
+              >
+                New
+              </Nav.Link>
+            </Nav>
+          </Container>
+        )}
+        {user && user.isAdmin && (
+          <Container>
+            <Nav style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              <Nav.Link
+                href="/admin"
+                style={{ color: "#9a044c", fontWeight: "500" }}
+              >
+                Home
+              </Nav.Link>
+              <Nav.Link
+                href="/statistics"
+                style={{ color: "#9a044c", fontWeight: "500" }}
+              >
+                Statistics
+              </Nav.Link>
+            </Nav>
+          </Container>
+        )}
       </Navbar>
     </>
   );

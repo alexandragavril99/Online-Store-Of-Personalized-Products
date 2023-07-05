@@ -128,7 +128,13 @@ function ProductDetails() {
 
   const [rating, setRating] = React.useState(0);
 
+  const [rating2, setRating2] = React.useState(0);
+
   const [selectedSize, setSelectedSize] = useState("XS");
+
+  useEffect(() => {
+    setRating2(rating);
+  }, [rating]);
 
   useEffect(() => {
     if (product.personalization) {
@@ -242,7 +248,8 @@ function ProductDetails() {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (event) => {
+    event.preventDefault();
     let personalizationArray = [];
     if (product.label.includes("text")) {
       personalizationArray.push({ text: customText });
@@ -251,13 +258,16 @@ function ProductDetails() {
       personalizationArray.push({ size: selectedSize });
     }
     if (product.label.includes("picture")) {
-      personalizationArray.push({ image: originalImage.name });
+      if (originalImage) {
+        personalizationArray.push({ image: originalImage.name });
+      }
     }
     setPersonalization(personalizationArray);
 
     const formData = new FormData();
     console.log(originalImage);
     formData.append("image", originalImage);
+    formData.append("quantity", quantity);
     formData.append("personalization", JSON.stringify(personalizationArray));
     axios
       .post(
@@ -343,7 +353,7 @@ function ProductDetails() {
     setOpenImageModal(false);
     const updatedProduct = {
       ...product,
-      personalization: [{ image: croppedImage }],
+      personalization: [{ image: originalImage ? originalImage.name : null }],
     };
     console.log(updatedProduct);
     setProduct(updatedProduct);
@@ -621,13 +631,8 @@ function ProductDetails() {
               justifyContent: "center",
             }}
           >
-            <Rating
-              name="simple-controlled"
-              value={rating}
-              onChange={(event, newValue) => {
-                setRating(newValue);
-              }}
-            />
+            <Rating name="simple-controlled" value={rating} />
+
             <Typography
               variant="subline2"
               style={{ marginLeft: 5, color: "gray" }}

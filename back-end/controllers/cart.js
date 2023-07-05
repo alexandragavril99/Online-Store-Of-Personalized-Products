@@ -6,7 +6,7 @@ const { ObjectId } = require("mongodb");
 
 const controller = {
   addProductToCart: async (req, res) => {
-    console.log(req.body);
+    console.log(req.headers);
     const productId = req.params.id;
     const productDocument = await ProductSchema.findOne({
       _id: new ObjectId(productId),

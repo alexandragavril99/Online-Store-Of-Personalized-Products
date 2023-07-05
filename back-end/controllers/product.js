@@ -69,6 +69,7 @@ const controller = {
         res.status(500).send({ message: error.message });
       });
   },
+  
 };
 
 module.exports = controller;

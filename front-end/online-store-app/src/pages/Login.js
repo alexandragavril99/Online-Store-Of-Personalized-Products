@@ -43,14 +43,18 @@ function Login() {
     axios
       .post(`http://localhost:8081/api/login`, user)
       .then((res) => {
-        console.log(res);
+        console.log(res.data);
         toast.success("Login successful!", {
           position: toast.POSITION.BOTTOM_CENTER,
           autoClose: 3000,
         });
         document.cookie = "jwt=" + res.data.token;
         axios.defaults.withCredentials = true;
-        navigate("/home");
+        if (res.data.user.isAdmin) {
+          navigate("/statistics");
+        } else {
+          navigate("/home");
+        }
       })
       .catch((err) => {
         console.log(err);

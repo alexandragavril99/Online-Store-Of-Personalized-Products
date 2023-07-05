@@ -36,6 +36,7 @@ function AddressForm(props) {
   let [street, setStreet] = React.useState("");
   let [postalCode, setPostalCode] = React.useState("");
   let [otherInfo, setOtherInfo] = React.useState("");
+  let [totalPrice, setTotalPrice] = React.useState(0);
 
   const handleSubmit = () => {
     props.onSubmitAddressForm({
@@ -53,37 +54,19 @@ function AddressForm(props) {
 
   React.useEffect(() => {
     console.log(props);
+    let productsFromCart = props.data;
+    let price = 0;
+    productsFromCart.map((item) => {
+      if (!item.product.label.includes("discount")) {
+        price += item.product.price * item.orderedQuantity;
+      } else {
+        price +=
+          (item.product.price - 0.1 * item.product.price) *
+          item.orderedQuantity;
+      }
+    });
+    setTotalPrice(price);
   });
-
-  // const handleCheckout = () => {
-  //   const newProducts = products.map((item) => {
-  //     return {
-  //       name: item.product.name,
-  //       price: item.product.price,
-  //       description: item.product.description,
-  //       orderedQuantity: item.orderedQuantity,
-  //     };
-  //   });
-  //   //  const newProducts = {};
-
-  //   console.log(products);
-  //   console.log(newProducts);
-  //   axios
-  //     .post(
-  //       "http://localhost:8081/api/stripe/create-checkout-session",
-  //       {
-  //         newProducts,
-  //       },
-  //       { withCredentials: true }
-  //     )
-  //     .then((res) => {
-  //       console.log(res.data.url);
-  //       if (res.data.url) {
-  //         window.location.href = res.data.url;
-  //       }
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
 
   return (
     <>
@@ -232,9 +215,24 @@ function AddressForm(props) {
                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                   />
 
-                  <ListItemText
-                    primary={item.product.price * item.orderedQuantity + " RON"}
-                  />
+                  {!item.product.label.includes("discount") && (
+                    <ListItemText
+                      primary={
+                        item.product.price * item.orderedQuantity + " RON"
+                      }
+                    />
+                  )}
+
+                  {item.product.label.includes("discount") && (
+                    <ListItemText
+                      primary={
+                        (
+                          (item.product.price - item.product.price * 0.1) *
+                          item.orderedQuantity
+                        ).toFixed(2) + " RON"
+                      }
+                    />
+                  )}
                   <ListItemText
                     secondary={item.orderedQuantity + " pcs."}
                     style={{ fontFamily: "'Montserrat', sans-serif" }}
@@ -280,7 +278,9 @@ function AddressForm(props) {
             }}
           >
             <label style={{ fontWeight: "600" }}>Total price: </label>
-            <label style={{ fontWeight: "600" }}>264.54 RON</label>
+            <label style={{ fontWeight: "600" }}>
+              {totalPrice.toFixed(2)} RON
+            </label>
           </div>
         </div>
       </div>
